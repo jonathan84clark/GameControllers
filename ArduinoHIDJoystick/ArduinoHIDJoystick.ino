@@ -33,39 +33,92 @@
 Joystick_ Joystick;
 
 int toggle = 0;
-// Constant that maps the physical pin to the joystick button.
-const int pinToButtonMap = 9;
-
+int lastButtonStates[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+int buttonPins[] = {A_BTN, B_BTN, JOYSTICK_BTN, Z_BUTTON, L_BUTTON, R_BUTTON, C_UP, C_LEFT, C_RIGHT, C_DN};
 void setup() {
+  Serial.begin(9600);
   // Initialize Button Pins
-  pinMode(pinToButtonMap, INPUT_PULLUP);
+  pinMode(HAT_UP, INPUT_PULLUP);
+  pinMode(HAT_LEFT, INPUT_PULLUP);
+  pinMode(HAT_RIGHT, INPUT_PULLUP);
+  pinMode(HAT_DN, INPUT_PULLUP);
+
+  pinMode(C_UP, INPUT_PULLUP);
+  pinMode(C_LEFT, INPUT_PULLUP);
+  pinMode(C_RIGHT, INPUT_PULLUP);
+  pinMode(C_DN, INPUT_PULLUP);
+
+  pinMode(A_BTN, INPUT_PULLUP);
+  pinMode(B_BTN, INPUT_PULLUP);
+  pinMode(JOYSTICK_BTN, INPUT_PULLUP);
+  pinMode(Z_BUTTON, INPUT_PULLUP);
+
+  pinMode(L_BUTTON, INPUT_PULLUP);
+  pinMode(R_BUTTON, INPUT_PULLUP);
+
+  pinMode(JOYSTICK_X, INPUT);
+  pinMode(JOYSTICK_Y, INPUT);
 
   // Initialize Joystick Library
-  //Joystick.begin();
-  //Joystick.setXAxisRange(-127, 127);
+  Joystick.begin();
+  Joystick.setXAxisRange(-127, 127);
+  Joystick.setYAxisRange(-127, 127);
 }
 
 // Last state of the button
 int lastButtonState = 0;
 
+int CalculateJoystickValue(int pin)
+{
+   int output = 0;
+   float joystickValue = (float)analogRead(pin) / 1024.0;
+   joystickValue = (joystickValue * 254.0f) - 127.0;
+   output = (int)joystickValue;
+
+   return output;
+}
 void loop()
 {
 
-   /*
-  // Read pin values
-  if (toggle == 0)
+  // Joysticks
+  int joystickYValue = CalculateJoystickValue(JOYSTICK_Y);
+  Joystick.setYAxis(joystickYValue);
+  
+  int joystickXValue = CalculateJoystickValue(JOYSTICK_X);
+  Joystick.setXAxis(joystickXValue);
+
+  // Hat Switches
+  if (!digitalRead(HAT_UP))
   {
-     Joystick.setButton(1, 1);
-     Joystick.setXAxis(50);
-     toggle = 1;
+     Joystick.setHatSwitch(0, 0);
+  }
+  else if (!digitalRead(HAT_RIGHT))
+  {
+     Joystick.setHatSwitch(0, 90);
+  }
+  else if (!digitalRead(HAT_DN))
+  {
+     Joystick.setHatSwitch(0, 180);
+  }
+  else if (!digitalRead(HAT_LEFT))
+  {
+     Joystick.setHatSwitch(0, 270);
   }
   else
   {
-     Joystick.setButton(1, 0);
-     Joystick.setXAxis(0);
-     toggle = 0;
+     Joystick.setHatSwitch(0, -1);
   }
-  */
 
-  delay(500);
+  // Iterate through all buttons
+  for (int i = 0; i < 10; i++)
+  {
+      int buttonState = digitalRead(buttonPins[i]);
+      if (buttonState != lastButtonStates[i])
+      {
+          Joystick.setButton(i, buttonState);
+          lastButtonStates[i] = buttonState;
+      }
+  }
+
+  delay(50);
 }
