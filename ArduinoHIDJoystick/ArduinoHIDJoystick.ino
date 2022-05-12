@@ -82,6 +82,7 @@ void loop()
 
   // Joysticks
   int joystickYValue = CalculateJoystickValue(JOYSTICK_Y);
+  joystickYValue *= -1;
   Joystick.setYAxis(joystickYValue);
   
   int joystickXValue = CalculateJoystickValue(JOYSTICK_X);
@@ -113,6 +114,14 @@ void loop()
   for (int i = 0; i < 10; i++)
   {
       int buttonState = digitalRead(buttonPins[i]);
+      if (buttonState == 1)
+      {
+         buttonState = 0;
+      }
+      else
+      {
+         buttonState = 1;
+      }
       if (buttonState != lastButtonStates[i])
       {
           Joystick.setButton(i, buttonState);
