@@ -33,8 +33,9 @@
 Joystick_ Joystick;
 
 int toggle = 0;
-int lastButtonStates[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-int buttonPins[] = {A_BTN, B_BTN, JOYSTICK_BTN, Z_BUTTON, L_BUTTON, R_BUTTON, C_UP, C_LEFT, C_RIGHT, C_DN};
+int lastButtonStates[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+int buttonPins[] = {A_BTN, B_BTN, JOYSTICK_BTN, Z_BUTTON, L_BUTTON, R_BUTTON, C_UP, C_LEFT, C_RIGHT, C_DN,
+                    HAT_UP, HAT_LEFT, HAT_RIGHT, HAT_DN};
 void setup() {
   Serial.begin(9600);
   // Initialize Button Pins
@@ -88,30 +89,8 @@ void loop()
   int joystickXValue = CalculateJoystickValue(JOYSTICK_X);
   Joystick.setXAxis(joystickXValue);
 
-  // Hat Switches
-  if (!digitalRead(HAT_UP))
-  {
-     Joystick.setHatSwitch(0, 0);
-  }
-  else if (!digitalRead(HAT_RIGHT))
-  {
-     Joystick.setHatSwitch(0, 90);
-  }
-  else if (!digitalRead(HAT_DN))
-  {
-     Joystick.setHatSwitch(0, 180);
-  }
-  else if (!digitalRead(HAT_LEFT))
-  {
-     Joystick.setHatSwitch(0, 270);
-  }
-  else
-  {
-     Joystick.setHatSwitch(0, -1);
-  }
-
   // Iterate through all buttons
-  for (int i = 0; i < 10; i++)
+  for (int i = 0; i < 14; i++)
   {
       int buttonState = digitalRead(buttonPins[i]);
       if (buttonState == 1)
